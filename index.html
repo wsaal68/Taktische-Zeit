@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Taktische Zeit</title>
+
+<style>
+  :root {
+    --bg-color: #000F75;
+    --text-color: #222;
+    --card-bg: #fff;
+    --label-color: #777;
+    --highlight-bg: #e0f7fa;
+    --shadow: rgba(0, 0, 0, 0.1);
+
+    --color-tag: #1e3a8a;
+    --color-zeit: #16a34a;
+    --color-monat: #d97706;
+    --color-jahr: #b91c1c;
+
+    /* Schriftgrößen mit clamp(min, viewport-scaling, max) */
+    --font-size-label: clamp(0.75rem, 1vw + 0.3rem, 0.95rem);
+    --font-size-value: clamp(1.5rem, 4vw + 0.5rem, 3.5rem);
+    --font-size-value-utc: clamp(0.9rem, 1.5vw + 0.3rem, 1.3rem);
+    --font-size-taktisch-zeit: clamp(2rem, 5vw + 0.5rem, 4rem);
+    --font-size-dark-toggle: clamp(0.7rem, 1vw + 0.4rem, 1rem);
+
+    --logo-max-height: clamp(20px, 4vw + 5px, 45px);
+  }
+
+  body.dark {
+    --bg-color: #000F75; /* bleibt gleich */
+    --text-color: #eee;
+    --card-bg: #1e1e1e;
+    --label-color: #aaa;
+    --highlight-bg: #2b3d3d;
+    --shadow: rgba(0, 0, 0, 0.5);
+
+    --color-tag: #93c5fd;
+    --color-zeit: #86efac;
+    --color-monat: #fcd34d;
+    --color-jahr: #f87171;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    max-width: 800px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: auto;
+    gap: 6px;
+  }
+
+  .logo img {
+    max-height: var(--logo-max-height);
+    width: auto;
+    display: block;
+  }
+
+  button.toggle-button {
+    cursor: pointer;
+    font-size: var(--font-size-dark-toggle);
+    background: none;
+    border: none;
+    color: #E3E3E3;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: background 0.3s;
+  }
+
+  button.toggle-button:hover {
+    background: rgba(255, 165, 0, 0.50);
+  }
+
+  h1 {
+    margin: 20px 0 30px;
+    font-size: clamp(1.5rem, 3vw + 1rem, 2.5rem);
+    color: var(--text-color);
+  }
+
+  .container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px var(--shadow);
+    padding: clamp(15px, 2vw + 10px, 40px);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+
+  .item {
+    margin-bottom: 25px;
+  }
+
+  .label {
+    font-size: var(--font-size-label);
+    color: var(--label-color);
+    margin-bottom: 5px;
+  }
+
+  .value {
+    font-size: var(--font-size-value);
+    font-weight: bold;
+    color: var(--text-color);
+  }
+
+  /* UTC-Zeit zunächst verstecken */
+  .value.utc {
+    color: #888;
+    font-size: var(--font-size-value-utc);
+    display: none;
+  }
+
+  /* Wird via JS sichtbar geschaltet */
+  .value.utc.visible {
+    display: block;
+  }
+
+  .taktisch-box {
+    background: var(--highlight-bg);
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+    box-shadow: 0 2px 10px var(--shadow);
+  }
+
+  .taktisch-label {
+    font-size: var(--font-size-label);
+    color: var(--label-color);
+    margin-bottom: 15px;
+  }
+
+  .taktisch-label h2 {
+    margin: 0;
+  }
+
+  .taktisch-zeit {
+    font-size: var(--font-size-taktisch-zeit);
+    font-weight: bold;
+    letter-spacing: 1px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Ab großer Breite taktische Zeit in einer Zeile */
+  @media (min-width: 800px) {
+    .taktisch-zeit {
+      flex-wrap: nowrap;
+    }
+  }
+
+  .taktisch-tag {
+    color: var(--color-tag);
+  }
+
+  .taktisch-zeitteil {
+    color: var(--color-zeit);
+  }
+
+  .taktisch-monat {
+    color: var(--color-monat);
+    text-transform: lowercase;
+  }
+
+  .taktisch-jahr {
+    color: var(--color-jahr);
+  }
+
+  /* Kleinere Bildschirme - Container-Padding anpassen */
+  @media (max-width: 480px) {
+    .container {
+      padding: clamp(10px, 5vw + 5px, 25px);
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="top-bar">
+    <div class="logo">
+      <img src="https://ov-bad-bergzabern.thw.de/_assets/9a7a9b1587cf3495a4b0152d02d800c0/Images/logo_thw.png" alt="Logo THW" />
+      <img src="https://ov-bad-bergzabern.thw.de/typo3temp/assets/images/Ortsverband_Bad_Bergzabern__90f13b4cda4492c21e3c060637d2554c.png" alt="Logo OV Bad Bergzabern" />
+    </div>
+    <button class="toggle-button" id="darkModeBtn" onclick="toggleDarkMode()">🌙 Modus umschalten</button>
+    <button class="toggle-button" id="utcToggleBtn" onclick="toggleUtcVisibility()">🌐 UTC Zeit ein-/ausblenden</button>
+  </div>
+
+  <div class="container">
+    <div class="item">
+      <div class="label">Heute ist der</div>
+      <div class="value" id="datum"></div>
+    </div>
+
+    <div class="item">
+      <div class="label">Uhrzeit</div>
+      <div class="value" id="uhrzeit"></div>
+    </div>
+
+    <div class="item">
+      <div class="label">UTC/GMT-Zeit</div>
+      <div class="value utc" id="utczeit"></div>
+    </div>
+
+    <div class="taktisch-box">
+      <div class="taktisch-label"><h2>Taktische Zeit</h2></div>
+      <div class="taktisch-zeit" id="taktzeit"></div>
+    </div>
+  </div>
+
+  <footer style="margin-top: 20px; font-size: 0.85rem; color: #777; text-align:center; max-width:400px;">
+    ©2025 | Script by Wolfgang Saal (THW OV Bad Bergzabern)
+  </footer>
+
+  <script>
+    function pad(n) {
+      return n < 10 ? '0' + n : n;
+    }
+
+    function getMonthAbbreviation(month) {
+      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      return months[month];
+    }
+
+    function updateTime() {
+      const now = new Date();
+
+      const tag = pad(now.getDate());
+      const monat = pad(now.getMonth() + 1);
+      const jahr = now.getFullYear();
+
+      const stunde = pad(now.getHours());
+      const minute = pad(now.getMinutes());
+      const sekunde = pad(now.getSeconds());
+
+      document.getElementById('datum').textContent = `${tag}.${monat}.${jahr}`;
+      document.getElementById('uhrzeit').textContent = `${stunde}:${minute}:${sekunde}`;
+
+      const utcH = pad(now.getUTCHours());
+      const utcM = pad(now.getUTCMinutes());
+      const utcS = pad(now.getUTCSeconds());
+      const utcElem = document.getElementById('utczeit');
+      utcElem.textContent = `${utcH}:${utcM}:${utcS}`;
+
+      const taktZeitHTML = `
+        <span class="taktisch-tag">${tag}</span>
+        <span class="taktisch-zeitteil">${stunde}${minute}</span>
+        <span class="taktisch-monat">${getMonthAbbreviation(now.getMonth())}</span>
+        <span class="taktisch-jahr">${String(jahr).slice(-2)}</span>
+      `;
+
+      document.getElementById('taktzeit').innerHTML = taktZeitHTML;
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark') ? 'true' : 'false');
+    }
+
+    function toggleUtcVisibility() {
+      const utcElem = document.getElementById('utczeit');
+      const utcLabel = utcElem.previousElementSibling; // Label "UTC/GMT-Zeit"
+      if (utcElem.classList.contains('visible')) {
+        utcElem.classList.remove('visible');
+        if (utcLabel) utcLabel.style.display = 'none';
+        localStorage.setItem('utcVisible', 'false');
+      } else {
+        utcElem.classList.add('visible');
+        if (utcLabel) utcLabel.style.display = 'block';
+        localStorage.setItem('utcVisible', 'true');
+      }
+    }
+
+    function loadPreferences() {
+      // Darkmode laden
+      const storedMode = localStorage.getItem('darkMode');
+      if (storedMode === 'true') {
+        document.body.classList.add('dark');
+      } else if (storedMode === 'false') {
+        document.body.classList.remove('dark');
+      } else {
+        // Standard je nach Uhrzeit (20-6 Uhr dunkel)
+        const hour = new Date().getHours();
+        if (hour >= 20 || hour < 6) {
+          document.body.classList.add('dark');
+        } else {
+          document.body.classList.remove('dark');
+        }
+      }
+
+      // UTC Sichtbarkeit laden
+      const utcVisible = localStorage.getItem('utcVisible');
+      const utcElem = document.getElementById('utczeit');
+      const utcLabel = utcElem.previousElementSibling;
+      if (utcVisible === 'true') {
+        utcElem.classList.add('visible');
+        if (utcLabel) utcLabel.style.display = 'block';
+      } else {
+        utcElem.classList.remove('visible');
+        if (utcLabel) utcLabel.style.display = 'none';
+      }
+    }
+
+    // Initialisieren
+    loadPreferences();
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html>
