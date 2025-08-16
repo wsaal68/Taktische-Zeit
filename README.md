@@ -18,7 +18,7 @@
     
 ## Autor
 
-Wolfgang Saal, Böllenborn
+© 2025 Wolfgang Saal, Böllenborn
 
 ## Lizenz
 
