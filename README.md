@@ -16,10 +16,12 @@
 
 Öffne die Datei [`index.html`](index.html) in einem Webbrowser. Die Anwendung ist vollständig clientseitig und benötigt keine Installation.
     
+## Lizenz
+
+MIT License – siehe [`LICENSE`](LICENSE).
+
+---
+
 ## Autor
 
 © 2025 Wolfgang Saal, Böllenborn
-
-## Lizenz
-
-Dieses Projekt steht unter einer freien MIT-Lizenz.
