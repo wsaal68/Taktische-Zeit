@@ -39,6 +39,7 @@
     --font-size-dark-toggle: clamp(0.7rem, 1vw + 0.4rem, 1rem);
   }
 
+  /* Dark-Mode Variablen */
   body.dark {
     --bg-color: #000F75;
     --text-color: #eee;
@@ -62,7 +63,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    min-height: 100vh;
+    min-height: 100dvh;
     padding: 20px;
     transition: background 0.3s, color 0.3s;
   }
@@ -71,7 +72,7 @@
     width: 100%;
     display: flex;
     justify-content: flex-end;
-    max-width: 800px;
+    max-width: 900px;
     align-items: center;
     gap: 10px;
   }
@@ -88,9 +89,9 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    min-width: 44px; min-height: 44px;
   }
   button.toggle-button:hover { background: rgba(255,165,0,0.5); }
-
   .toggle-button .icon { display: inline-block; line-height: 1; }
   .toggle-button .btn-text { white-space: nowrap; }
 
@@ -99,7 +100,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 20px var(--shadow);
     padding: clamp(15px, 2vw + 10px, 40px);
-    max-width: 800px;
+    max-width: 900px;
     width: 100%;
     text-align: center;
     transition: background 0.3s, box-shadow 0.3s;
@@ -107,15 +108,17 @@
 
   .site-footer { text-align: center; padding: 1rem; font-size: 0.9rem; color: #777; background: transparent; }
 
-  .item { margin-bottom: 25px; }
-  .label { font-size: var(--font-size-label); color: var(--label-color); margin-bottom: 5px; }
+  /* Grundlayout der Items (Stack) */
+  .items { display: grid; gap: 18px; }
+  .item  { display: grid; gap: 6px; align-items: baseline; justify-items: center; }
+  .label { font-size: var(--font-size-label); color: var(--label-color); }
   .value { font-size: var(--font-size-value); font-weight: bold; color: var(--text-color); }
 
   .value.utc { color: #888; font-size: var(--font-size-value-utc); display: none; }
   .value.utc.visible { display: block; }
 
-  .taktisch-box { background: var(--highlight-bg); color: var(--text-color); padding: 20px; border-radius: 10px; margin-top: 30px; box-shadow: 0 2px 10px var(--shadow); }
-  .taktisch-label { font-size: var(--font-size-label); color: var(--label-color); margin-bottom: 15px; }
+  .taktisch-box { background: var(--highlight-bg); color: var(--text-color); padding: 20px; border-radius: 10px; margin-top: 24px; box-shadow: 0 2px 10px var(--shadow); }
+  .taktisch-label { font-size: var(--font-size-label); color: var(--label-color); margin-bottom: 10px; }
   .taktisch-label h2 { margin: 0; }
 
   .taktisch-zeit {
@@ -131,13 +134,6 @@
   .taktisch-monat { color: var(--color-monat); text-transform: uppercase; }
   .taktisch-jahr { color: var(--color-jahr); }
 
-  /* ≤480px: Touch-Optimierungen */
-  @media (max-width: 480px) {
-    .container { padding: clamp(10px, 5vw + 5px, 25px); }
-    html { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
-    button.toggle-button { touch-action: manipulation; min-height: 44px; border-radius: 9999px; }
-  }
-
   /* ≤600px: Buttons als Icons (sichtbar), Footer weg */
   @media (max-width: 600px) {
     .top-bar { gap: 8px; }
@@ -147,20 +143,74 @@
     }
     .toggle-button .btn-text { display: none; }  /* Nur Text ausblenden */
     .toggle-button .icon { margin: 0; }          /* Emoji bleibt */
-    .container { padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px var(--shadow); }
-    .taktisch-box { padding: 12px; margin-top: 18px; }
-    .taktisch-zeit { font-size: 1.5rem; gap: 6px; }
-    .site-footer { font-size: 0.8rem; padding: 0.5rem; display: none !important; }
+    .site-footer { display: none !important; }
   }
 
-  /* ≤400px: Labels ausblenden + extra Luft oben, Buttons weiter sichtbar */
-  @media (max-width: 400px) {
-    .label { display: none; }
-    .container { padding: 10px 6px 6px; }
-    .item:first-child .value { margin-top: 6px; }
-    .taktisch-zeit { font-size: 1.1rem; }
-    /* Buttons bleiben als Icons sichtbar (Text ist ohnehin via ≤600px ausgeblendet) */
+  /* ====== LANDSCAPE-OPTIMIERUNG (wenig Höhe) ====== */
+  /* 1) Mittlere Schranke: Inline-Labels + einzeilige Items (schont Höhe) */
+  @media (orientation: landscape) and (max-height: 520px) {
+    body { padding: 10px; }
+    .container { padding: 10px 12px; }
+    .items { 
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px 16px;
+    }
+    .item {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 0;
+    }
+    .label { 
+      display: inline; 
+      margin: 0; 
+    }
+    .value { 
+      display: inline; 
+      font-variant-numeric: tabular-nums;
+      line-height: 1.15;
+    }
+    .site-footer { display: none !important; }
+    .top-bar .btn-text { display: none !important; }
+    .taktisch-box { margin-top: 12px; padding: 10px; }
   }
+
+  /* 2) Enge Schranke: Labels ganz ausblenden, nur Werte (maximal kompakt) */
+  @media (orientation: landscape) and (max-height: 420px) {
+    .label { display: none !important; }
+    .items { gap: 8px 14px; }
+    .item { gap: 4px; }
+    .container { padding: 8px; }
+  }
+
+  /* 3) Falls extrem wenig Platz: noch kleinere Font-Skalierung */
+  @media (orientation: landscape) and (max-height: 360px) {
+    :root{
+      --font-size-value: clamp(1rem, calc(var(--vpmin) / 18), 2.5rem);
+      --font-size-value-utc: clamp(0.8rem, calc(var(--vpmin) / 26), 1.2rem);
+      --font-size-taktisch-zeit: clamp(1.2rem, calc(var(--vpmin) / 12), 3rem);
+      --font-size-label: clamp(0.65rem, calc(var(--vpmin) / 48), 0.85rem);
+    }
+    .taktisch-box { margin-top: 8px; }
+  }
+
+  /* ====== PORTRAIT-OPTIMIERUNG ====== */
+  @media (orientation: portrait) and (max-width: 900px) {
+    .top-bar .btn-text { display: none !important; }
+    .site-footer { display: none !important; }
+  }
+
+  /* ====== FLUID SCALING (kleinere Kante) ====== */
+  :root{ --vpmin: min(100vw, 100dvh); }
+  :root{
+    --font-size-value: clamp(1.2rem, calc(var(--vpmin) / 16), 3.4rem);
+    --font-size-value-utc: clamp(0.9rem, calc(var(--vpmin) / 24), 1.3rem);
+    --font-size-taktisch-zeit: clamp(1.6rem, calc(var(--vpmin) / 10.5), 4.2rem);
+    --font-size-label: clamp(0.75rem, calc(var(--vpmin) / 42), 0.95rem);
+  }
+
 </style>
 </head>
 
@@ -175,19 +225,22 @@
   </div>
 
   <div class="container">
-    <div class="item">
-      <div class="label">Heute ist der</div>  
-      <div class="value" id="datum"></div>
-    </div>
+    <!-- flexible Items-Container -->
+    <div class="items" id="items">
+      <div class="item">
+        <div class="label">Heute ist der</div>  
+        <div class="value" id="datum" aria-label="Datum"></div>
+      </div>
 
-    <div class="item">
-      <div class="label">Lokale Uhrzeit</div>
-      <div class="value" id="uhrzeit"></div>
-    </div>
+      <div class="item">
+        <div class="label">Lokale Uhrzeit</div>
+        <div class="value" id="uhrzeit" aria-label="Lokale Uhrzeit"></div>
+      </div>
 
-    <div class="item">
-      <div class="label">UTC / GMT-Zeit</div>
-      <div class="value utc" id="utczeit"></div>
+      <div class="item" id="utcItem">
+        <div class="label">UTC / GMT-Zeit</div>
+        <div class="value utc" id="utczeit" aria-label="UTC Zeit"></div>
+      </div>
     </div>
 
     <div class="taktisch-box"> 
@@ -197,13 +250,25 @@
   </div>
 
   <footer class="site-footer" style="text-align:center; font-size: 0.75rem; color:#777; margin-top: 1rem;">
-    © 2025 Wolfgang Saal, Böllenborn - Version 1.2 - 21.08.2025<br />
+    © 2025 Wolfgang Saal, Böllenborn - Version 1.4 - 21.08.2025<br />
     Dieses Projekt ist unter der <a href="https://opensource.org/licenses/MIT" target="_blank">MIT-Lizenz</a> lizenziert. 
     Die Nutzung ist frei, solange der Urheber genannt wird.<br>
     Download unter <a href="https://github.com/wsaal68/taktische-zeit" target="_blank">Github</a>.
   </footer>
 
 <script>
+  /* === FLUID SCALING Fallback: setzt --vpmin auf die kleinere Kante in px === */
+  (function setVpmin(){
+    function apply() {
+      var vpmin = Math.min(window.innerWidth, window.innerHeight);
+      document.documentElement.style.setProperty('--vpmin', vpmin + 'px');
+    }
+    apply();
+    window.addEventListener('resize', apply);
+    window.addEventListener('orientationchange', apply);
+    window.addEventListener('load', function(){ setTimeout(apply, 150); });
+  })();
+
   /* ---------- Helpers ---------- */
   const Q = (sel) => document.querySelector(sel);
   function pad(n){ return n < 10 ? '0' + n : '' + n; }
@@ -225,8 +290,7 @@
     const utcH = pad(now.getUTCHours());
     const utcM = pad(now.getUTCMinutes());
     const utcS = pad(now.getUTCSeconds());
-    const utcElem = Q('#utczeit');
-    utcElem.textContent = `${utcH}:${utcM}:${utcS}`;
+    Q('#utczeit').textContent = `${utcH}:${utcM}:${utcS}`;
 
     Q('#taktzeit').innerHTML = `
       <span class="taktisch-tag">${tag}</span>
@@ -242,43 +306,36 @@
     localStorage.setItem('darkMode', isDark ? 'true' : 'false');
     updateDarkModeButton();
   }
-
   function toggleDarkMode(){
     const isDark = !document.body.classList.contains('dark');
     setDark(isDark);
   }
-
   function updateDarkModeButton(){
     const btn = Q('#darkModeBtn');
     const icon = btn.querySelector('.icon');
     const text = btn.querySelector('.btn-text');
     const isDark = document.body.classList.contains('dark');
 
-    // Emoji immer setzen
-    icon.textContent = isDark ? '☀️' : '🌙';
-
-    // Text für große Screens vorbereiten (bei ≤600px per CSS ausgeblendet)
-    text.textContent = isDark ? 'Heller Modus' : 'Dunkler Modus';
+    icon.textContent = isDark ? '☀️' : '🌙';           // Emoji immer sichtbar
+    text.textContent = isDark ? 'Heller Modus' : 'Dunkler Modus'; // für große Screens
   }
 
+  /* ---------- UTC Sichtbarkeit ---------- */
   function toggleUtcVisibility(){
     const utcElem = Q('#utczeit');
-    const utcLabel = utcElem.previousElementSibling;
+    const utcLabel = utcElem ? utcElem.previousElementSibling : null;
     const isVisible = utcElem.classList.toggle('visible');
-    if (utcLabel) utcLabel.style.display = isVisible ? 'block' : 'none';
+    if (utcLabel) utcLabel.style.display = isVisible ? '' : 'none';
     localStorage.setItem('utcVisible', isVisible ? 'true' : 'false');
     updateUtcButton();
   }
-
   function updateUtcButton(){
     const isVisible = Q('#utczeit').classList.contains('visible');
-    const btn = Q('#utcToggleBtn');
-    const text = btn.querySelector('.btn-text');
-
-    // Icon bleibt immer 🌐
-    text.textContent = isVisible ? 'UTC Zeit aus' : 'UTC Zeit';
+    const text = Q('#utcToggleBtn .btn-text');
+    if (text) text.textContent = isVisible ? 'UTC Zeit aus' : 'UTC Zeit';
   }
 
+  /* ---------- Präferenzen laden ---------- */
   function loadPreferences(){
     const stored = localStorage.getItem('darkMode');
     if (stored === 'true' || stored === 'false'){
@@ -296,7 +353,7 @@
     const utcLabel = utcElem.previousElementSibling;
     const utcVisible = localStorage.getItem('utcVisible') === 'true';
     utcElem.classList.toggle('visible', utcVisible);
-    if (utcLabel) utcLabel.style.display = utcVisible ? 'block' : 'none';
+    if (utcLabel) utcLabel.style.display = utcVisible ? '' : 'none';
 
     updateDarkModeButton();
     updateUtcButton();
