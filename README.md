@@ -26,6 +26,10 @@ Sie kann als Progressive Web App (PWA) installiert und offline verwendet werden.
 
 MIT License – siehe [`LICENSE`](LICENSE).
 
+## Screenshot
+<img width="950" height="570" alt="grafik" src="https://github.com/user-attachments/assets/f8b04d95-4ab9-4c94-a2e5-2739e65fa09e" />
+
+
 ---
 
 ## Autor
