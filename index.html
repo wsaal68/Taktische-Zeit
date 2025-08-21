@@ -225,6 +225,94 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 }
+
+/* Mobile Optimierung: Styles für kleine Bildschirme */
+@media (max-width: 600px) {
+/* Mobile Optimization */
+  body {
+    align-items: stretch;
+    gap: 0;
+  }
+  .logo {
+    align-items: center;
+    margin: 0 0 10px 0;
+  }
+  .logo-img {
+    width: 70px;
+    max-height: 40px;
+  }
+  button.toggle-button {
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    padding: 14px 0;
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin: 16px 0 20px;
+  }
+  .container {
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .taktisch-box {
+    padding: 12px;
+    margin-top: 18px;
+  }
+  .taktisch-zeit {
+    font-size: 1.5rem;
+    gap: 6px;
+  }
+  .site-footer {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+  .item {
+    margin-bottom: 16px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 400px) {
+  .logo-img {
+    width: 50px;
+    max-height: 30px;
+  }
+  .container {
+    padding: 4px;
+  }
+  .taktisch-zeit {
+    font-size: 1.1rem;
+  }
+}
+
+/* Footer auf Smartphones ausblenden */
+@media (max-width: 600px) {
+  .site-footer {
+    display: none !important;
+  }
+  /* Buttons nur als Icons */
+  button.toggle-button {
+    font-size: 1.5rem;
+    padding: 12px 0;
+  }
+  button.toggle-button::after {
+    content: '';
+  }
+}
+
+/* Buttons: Text auf kleinen Geräten ausblenden */
+@media (max-width: 600px) {
+  #darkModeBtn,
+  #utcToggleBtn {
+    text-indent: -9999px;
+    width: 48px;
+    min-width: 48px;
+    overflow: hidden;
+  }
+}
+
 </style>
 </head>
 
@@ -262,7 +350,7 @@ html {
   </div>
 
   <footer class="site-footer style="text-align:center; font-size: 0.75rem; color:#75; margin-top: 1rem;">
-  © 2025 Wolfgang Saal, Böllenborn - Version 1.0 - 07.08.2025<br />
+  © 2025 Wolfgang Saal, Böllenborn - Version 1.1 - 21.08.2025<br />
   Dieses Projekt ist unter der <a href="https://opensource.org/licenses/MIT" target="_blank">MIT-Lizenz</a> lizenziert. 
   Die Nutzung ist frei, solange der Urheber genannt wird.<br>
   Download unter <a href="https://github.com/wsaal68/taktische-zeit" target="_blank""> Github.</a>
@@ -315,10 +403,14 @@ html {
   }
 
   function updateDarkModeButton() {
-    const btn = document.getElementById('darkModeBtn');
-    const isDark = document.body.classList.contains('dark');
+  const btn = document.getElementById('darkModeBtn');
+  const isDark = document.body.classList.contains('dark');
+  if (window.innerWidth <= 600) {
+    btn.innerHTML = isDark ? '☀️' : '🌙';
+  } else {
     btn.textContent = isDark ? '☀️ Heller Modus' : '🌙 Dunkler Modus';
   }
+}
 
   function toggleUtcVisibility() {
     const utcElem = document.getElementById('utczeit');
@@ -332,11 +424,15 @@ html {
   }
 
   function updateUtcButton() {
-    const utcElem = document.getElementById('utczeit');
-    const isVisible = utcElem.classList.contains('visible');
-    const btn = document.getElementById('utcToggleBtn');
+  const utcElem = document.getElementById('utczeit');
+  const isVisible = utcElem.classList.contains('visible');
+  const btn = document.getElementById('utcToggleBtn');
+  if (window.innerWidth <= 600) {
+    btn.innerHTML = isVisible ? '🌐' : '🌐';
+  } else {
     btn.textContent = isVisible ? '🌐 UTC Zeit aus' : '🌐 UTC Zeit';
   }
+}
 
   function loadPreferences() {
     const storedMode = localStorage.getItem('darkMode');
